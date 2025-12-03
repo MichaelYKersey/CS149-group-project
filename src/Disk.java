@@ -1,3 +1,4 @@
+package src;
 public class Disk {
     final static int DISK_SIZE = 1<<30;//1GB 
     final static int BLOCK_SIZE = 1 << 12;//4KB

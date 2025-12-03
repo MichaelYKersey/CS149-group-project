@@ -1,3 +1,4 @@
+package src;
 public class FileSystem {
     private Disk m_disk;
     public final static int MEMORY_SIZE = 1<<24;//4MB
