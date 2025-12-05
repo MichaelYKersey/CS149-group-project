@@ -3,7 +3,7 @@ package src;
 import java.util.Arrays;
 
 public class Disk {
-    final static int DISK_SIZE = 1<<30;//1GB 
+    final static int DISK_SIZE = 1<<25;//32MB 
 
     public byte[] m_data = new byte[DISK_SIZE];
     

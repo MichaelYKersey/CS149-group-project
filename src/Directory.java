@@ -1,9 +1,9 @@
 package src;
-public class Directory extends File {
-    public File[] get_contents() {
+public class Directory {
+    public DirectoryEntry[] get_contents() {
         return null;
     }
-    public void addEntry(File file) {
+    public void addEntry(DirectoryEntry p_file) {
 
     }
 }
