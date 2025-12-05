@@ -34,7 +34,7 @@ public class VirtualRam {
      * @return byte at the section of the file
      */
     public byte read(int p_fileID, int p_address) {
-        return m_disk.getData(m_pages.get(p_fileID).get(p_address/PAGE_SIZE)+p_address%PAGE_SIZE);
+        return m_disk.readData(m_pages.get(p_fileID).get(p_address/PAGE_SIZE)+p_address%PAGE_SIZE);
     }
     /**
      * maps section of disc to a page

@@ -39,13 +39,13 @@ public class FAT {
         writeEntry(p_clusterNumber, p_nextClusterNumber);
     }
     public short getNextCluster(short p_clusterNumber) {
-        return ByteArrayUtils.readShort(m_disk.getData(m_tableStart+p_clusterNumber*2, 2));
+        return m_disk.readShort(m_tableStart+p_clusterNumber*2);
     }
     public int getEntryValue(short p_clusterNumber) {
-        return ByteArrayUtils.readShort(m_disk.getData(m_tableStart+p_clusterNumber*2, 2));
+        return m_disk.readInt(m_tableStart+p_clusterNumber*2);
     }
     public void writeEntry(short p_entryNumber, short p_value) {
-        m_disk.writeData(m_tableStart+p_entryNumber*2,ByteArrayUtils.toByteArray(p_value));
+        m_disk.writeInt(m_tableStart+p_entryNumber*2,p_value);
     }
     //removal of entries is not needed due to project requirements
 }
