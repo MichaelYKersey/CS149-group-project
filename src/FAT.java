@@ -3,6 +3,11 @@ package src;
 public class FAT {
     private Disk m_disk;
     private int m_tableStart;
+
+    public FAT(Disk p_disk, int p_tableStart) {
+        m_disk = p_disk;
+        m_tableStart = p_tableStart;
+    }
     /**
      * reserves an open entry in table
      * @return cluster number claimed
