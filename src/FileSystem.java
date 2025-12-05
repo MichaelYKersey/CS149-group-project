@@ -1,9 +1,9 @@
 package src;
 public class FileSystem {
     private Disk m_disk;
-    private VirtualRam m_vram;
+    private VirtualRam m_vram = new VirtualRam(m_disk);
     final static int BLOCK_SIZE = 1 << 12;//4KB
-    
+
     public File getRoot() {
         return null;
     }
