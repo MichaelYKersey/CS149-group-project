@@ -1,5 +1,6 @@
 import java.util.Arrays;
 
+import src.File;
 import src.FileSystem;
 
 public class Main {
@@ -30,10 +31,11 @@ public class Main {
                 System.out.println("Missing file path or length.");
                 return;
             }
-            fileSystem.openFile(args[1]);
-            byte[] data = fileSystem.readFile(args[1], 0, Integer.parseInt(args[2]));
+            File f = new File(fileSystem,args[1]);
+            f.openFile();
+            byte[] data = f.readData(0, Integer.parseInt(args[2]));
             System.out.println(Arrays.toString(data));
-            fileSystem.closeFile(args[1]);
+            f.closeFile();
         }
         else if (command.equals("create")) {
             if (args.length < 3) {

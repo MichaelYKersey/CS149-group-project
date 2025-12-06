@@ -5,7 +5,7 @@ public class File implements ReadWriteable{
     DirectoryEntry m_directoryEntryLocation;
     short[] m_clusters;
     String m_path;
-    File(FileSystem p_fileSystem, String p_path) {
+    public File(FileSystem p_fileSystem, String p_path) {
         m_fileSystem = p_fileSystem;
         m_path = p_path;
     }
