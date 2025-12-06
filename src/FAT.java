@@ -1,5 +1,8 @@
 package src;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class FAT {
     private Disk m_disk;
     private int m_tableStart;
@@ -54,5 +57,13 @@ public class FAT {
         m_disk.writeInt(m_tableStart+p_entryNumber*2,p_value);
     }
     public void appendEntry() {}
+    public ArrayList<Short> getEntryChain(short p_clusterChainStartNumber) {
+        ArrayList<Short> list = new ArrayList<>();
+        while (p_clusterChainStartNumber != -1) {
+            list.add(p_clusterChainStartNumber);
+            p_clusterChainStartNumber = getNextCluster(p_clusterChainStartNumber);
+        }
+        return list;
+    }
     //removal of entries is not needed due to project requirements
 }

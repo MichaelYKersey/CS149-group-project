@@ -10,9 +10,11 @@ public class DirectoryEntry {
     static final int ATTRIBUTES_OFFSET = 0x0B;
     static final int START_CLUSTER_OFFSET = 0x1A;
     static final int SIZE_OFFSET = 0x1C;
+    static final int ENTRY_SIZE = 32;
 
-    public DirectoryEntry(int p_diskAddress) {
+    public DirectoryEntry(int p_diskAddress, boolean read) {
         m_diskAddress = p_diskAddress;
+        if (read) return;
         //wipe the block
         for (int i=0; i<32; i++) {
             m_disk.writeData(m_diskAddress+i,(byte)0x00);
@@ -26,14 +28,13 @@ public class DirectoryEntry {
         short p_startClusterNumber,
         int p_size
     ) {
-        this(p_diskAddress);
+        this(p_diskAddress,false);
         setName(p_name);
         setExtensionName(p_extension);
         setIsDirectory(p_isDirectory);
         setStartCluster(p_startClusterNumber);
         setSize(p_size);
     }
-
     
     public void setName(String p_name) {
         if (p_name.length() > 8) throw new IllegalArgumentException();
@@ -94,5 +95,7 @@ public class DirectoryEntry {
         attributes |= (p_isDirectory ? (byte)0x10 : (byte)0x00);
         m_disk.writeData(m_diskAddress+ATTRIBUTES_OFFSET, attributes);
     }
-
+    public boolean isTerminatingEntry() {
+        return m_disk.readData(m_diskAddress+NAME_OFFSET) == 0x00;
+    }
 }

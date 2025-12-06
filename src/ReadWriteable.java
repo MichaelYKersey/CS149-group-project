@@ -9,7 +9,7 @@ public interface ReadWriteable {
         }
         return data;
     }
-    void writeData(int p_startAddress, byte p_data);
+    void writeData(int p_address, byte p_data);
     default void writeData(int p_startAddress, byte[] p_data) {
         for (int i=0; i<p_data.length; i++) {
             writeData(p_startAddress+i,p_data[i]);

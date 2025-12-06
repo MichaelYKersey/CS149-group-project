@@ -1,9 +1,11 @@
 package src;
 
+import java.util.ArrayList;
+
 public class File implements ReadWriteable{
     FileSystem m_fileSystem;
     DirectoryEntry m_directoryEntryLocation;
-    short[] m_clusters;
+    ArrayList<Short> m_clusters;
     String m_path;
     public File(FileSystem p_fileSystem, String p_path) {
         m_fileSystem = p_fileSystem;
@@ -13,13 +15,15 @@ public class File implements ReadWriteable{
      * linked file information to object
      */
     public void openFile() {
-
+        //TODO: get m_directorEntryLocation from path
+        m_clusters = m_fileSystem.getFAT().getEntryChain(m_directoryEntryLocation.getStartCluster());
     }
     /**
      * unlinks file information from object
      */
     public void closeFile() {
-        
+        m_directoryEntryLocation = null;
+        m_clusters = null;
     }
     /**
      * changes the size of a file
@@ -45,15 +49,18 @@ public class File implements ReadWriteable{
         }
         short newClusterChainStart = fat.getFreeEntries((short)(newClusterCount-curClusterCount))[0];
         fat.linkEntry(fatEntry, newClusterChainStart);
+        m_clusters = fat.getEntryChain(m_directoryEntryLocation.getStartCluster());
     }
     @Override
-    public void writeData(int p_startAddress, byte p_data) {
-        // TODO Auto-generated method stub
-        
+    public void writeData(int p_address, byte p_data) {
+        m_fileSystem.getDisk().writeData(mapAddressToDisk(p_address), p_data);
     }
     @Override
     public byte readData(int p_address) {
-        // TODO Auto-generated method stub
-        return 0;
+        return m_fileSystem.getDisk().readData(mapAddressToDisk(p_address));
+    }
+    public int mapAddressToDisk(int p_fileAddress) {
+        int clusterNum = m_clusters.get(p_fileAddress/FileSystem.CLUSTER_SIZE);
+        return clusterNum*FileSystem.CLUSTER_SIZE + p_fileAddress% FileSystem.CLUSTER_SIZE;
     }
 }

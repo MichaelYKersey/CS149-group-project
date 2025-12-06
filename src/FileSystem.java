@@ -20,4 +20,7 @@ public class FileSystem {
     public FAT getFAT() {
         return m_fat;
     }
+    public Disk getDisk() {
+        return m_disk;
+    }
 }
