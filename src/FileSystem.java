@@ -17,10 +17,26 @@ public class FileSystem {
     public void createDirectory(String p_path) {
         
     }
+    public Directory getRoot() {
+        return null;
+    }
     public FAT getFAT() {
         return m_fat;
     }
     public Disk getDisk() {
         return m_disk;
+    }
+    public DirectoryEntry getDirectoryEntry(String p_path) {
+        Directory currentDirectory = getRoot();
+        String[] names = p_path.split("/");
+        String cur_path = "";
+        for (int i=0; i<names.length-1; i++) {
+            DirectoryEntry nexEntry = currentDirectory.findFile(names[i]);
+            if (nexEntry == null || !nexEntry.isDirectory()) return null;
+            currentDirectory.closeFile();
+            currentDirectory = new Directory(this,cur_path+"/"+names[i]);
+            currentDirectory.openFile(nexEntry);
+        }
+        return currentDirectory.findFile(names[names.length-1]);
     }
 }
