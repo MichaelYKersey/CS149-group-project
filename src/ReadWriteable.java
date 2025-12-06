@@ -1,6 +1,8 @@
 package src;
 
 public interface ReadWriteable {
+
+    boolean inRange(int p_address);
     byte readData(int p_address);
     default byte[] readData(int p_startAddress, int p_length) {
         byte[] data = new byte[p_length];

@@ -53,11 +53,17 @@ public class File implements ReadWriteable{
     }
     @Override
     public void writeData(int p_address, byte p_data) {
+        if (!inRange(p_address)) throw new IllegalArgumentException();
         m_fileSystem.getDisk().writeData(mapAddressToDisk(p_address), p_data);
     }
     @Override
     public byte readData(int p_address) {
+        if (!inRange(p_address)) throw new IllegalArgumentException();
         return m_fileSystem.getDisk().readData(mapAddressToDisk(p_address));
+    }
+    @Override
+    public boolean inRange(int p_address) {
+        return p_address >= 0 && p_address < m_directoryEntryLocation.getSize();
     }
     public int mapAddressToDisk(int p_fileAddress) {
         int clusterNum = m_clusters.get(p_fileAddress/FileSystem.CLUSTER_SIZE);

@@ -9,10 +9,16 @@ public class Disk implements ReadWriteable{
     
     @Override
     public byte readData(int address) {
+        if (!inRange(address)) throw new IllegalArgumentException();
         return m_data[address];
     }
     @Override
     public void writeData(int p_address, byte p_data) {
+        if (!inRange(p_address)) throw new IllegalArgumentException();
         m_data[p_address] = p_data;
     };
+    @Override
+    public boolean inRange(int p_address) {
+        return p_address >= 0 && p_address < DISK_SIZE;
+    }
 }
