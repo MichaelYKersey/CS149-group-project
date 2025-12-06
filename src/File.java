@@ -70,8 +70,8 @@ public class File implements ReadWriteable{
         return p_address >= 0 && p_address < m_directoryEntry.getSize();
     }
     public int mapAddressToDisk(int p_fileAddress) {
-        int clusterNum = m_clusters.get(p_fileAddress/FileSystem.CLUSTER_SIZE);
-        return clusterNum*FileSystem.CLUSTER_SIZE + p_fileAddress% FileSystem.CLUSTER_SIZE;
+        short clusterNum = m_clusters.get(p_fileAddress/FileSystem.CLUSTER_SIZE);
+        return m_fileSystem.getFAT().mapAddressToDisk(clusterNum,p_fileAddress% FileSystem.CLUSTER_SIZE);
     }
     public DirectoryEntry getDirectoryEntry() {
         return m_directoryEntry;

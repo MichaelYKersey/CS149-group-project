@@ -3,8 +3,8 @@ package src;
 import java.io.File;
 
 public class DirectoryEntry {
-    public Disk m_disk;
-    public int m_diskAddress;
+    private Disk m_disk;
+    private int m_diskAddress;
     static final int NAME_OFFSET = 0x00;
     static final int EXTENSION_OFFSET = 0x08;
     static final int ATTRIBUTES_OFFSET = 0x0B;
@@ -12,7 +12,8 @@ public class DirectoryEntry {
     static final int SIZE_OFFSET = 0x1C;
     static final int ENTRY_SIZE = 32;
 
-    public DirectoryEntry(int p_diskAddress, boolean read) {
+    public DirectoryEntry(Disk p_disk, int p_diskAddress, boolean read) {
+        m_disk = p_disk;
         m_diskAddress = p_diskAddress;
         if (read) return;
         //wipe the block
@@ -21,6 +22,7 @@ public class DirectoryEntry {
         }
     }
     public DirectoryEntry (
+        Disk p_disk,
         int p_diskAddress,
         String p_name, 
         String p_extension, 
@@ -28,7 +30,7 @@ public class DirectoryEntry {
         short p_startClusterNumber,
         int p_size
     ) {
-        this(p_diskAddress,false);
+        this(p_disk,p_diskAddress,false);
         setName(p_name);
         setExtensionName(p_extension);
         setIsDirectory(p_isDirectory);
