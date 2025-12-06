@@ -2,7 +2,7 @@ package src;
 
 public class File implements ReadWriteable{
     FileSystem m_fileSystem;
-    int m_directoryEntryLocation;
+    DirectoryEntry m_directoryEntryLocation;
     short[] m_clusters;
     String m_path;
     File(FileSystem p_fileSystem, String p_path) {

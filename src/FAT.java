@@ -41,8 +41,8 @@ public class FAT {
     public short getNextCluster(short p_clusterNumber) {
         return m_disk.readShort(m_tableStart+p_clusterNumber*2);
     }
-    public int getEntryValue(short p_clusterNumber) {
-        return m_disk.readInt(m_tableStart+p_clusterNumber*2);
+    public short getEntryValue(short p_clusterNumber) {
+        return m_disk.readShort(m_tableStart+p_clusterNumber*2);
     }
     public void writeEntry(short p_entryNumber, short p_value) {
         m_disk.writeInt(m_tableStart+p_entryNumber*2,p_value);

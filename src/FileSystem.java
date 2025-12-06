@@ -13,4 +13,7 @@ public class FileSystem {
     public void createFile(String p_path, byte[] p_data) {
         
     }
+    public void createDirectory(String p_path) {
+        
+    }
 }

@@ -3,53 +3,95 @@ package src;
 import java.io.File;
 
 public class DirectoryEntry {
-    public char[] m_name; static final int NAME_OFFSET = 0x00;
-    public char[] m_extension; static final int EXTENSION_OFFSET = 0x08;
-    public byte m_attributes; static final int ATTRIBUTES_OFFSET = 0x0B;
-    public short m_startClusterNumber; static final int START_CLUSTER_OFFSET = 0x1A;
-    public int m_size; static final int FILE_SIZE = 0x1C;
+    public Disk m_disk;
+    public int m_diskAddress;
+    static final int NAME_OFFSET = 0x00;
+    static final int EXTENSION_OFFSET = 0x08;
+    static final int ATTRIBUTES_OFFSET = 0x0B;
+    static final int START_CLUSTER_OFFSET = 0x1A;
+    static final int SIZE_OFFSET = 0x1C;
 
+    public DirectoryEntry() {
+        //wipe the block
+        for (int i=0; i<32; i++) {
+            m_disk.writeData(m_diskAddress+i,(byte)0x00);
+        }
+    }
     public DirectoryEntry(
-        char[] p_name, 
-        char[] p_extension, 
+        String p_name, 
+        String p_extension, 
         boolean p_isDirectory, 
         short p_startClusterNumber,
         int p_size
     ) {
-        if (p_name.length != 8 || p_extension.length != 3) {
+        this();
+        if (p_name.length() > 8 || p_extension.length < 3) {
             throw new IllegalArgumentException();
         }
-        m_name = p_name;
-        m_extension = p_extension;
-        m_attributes = (p_isDirectory ? (byte)0x10 : (byte)0x00);
-        m_startClusterNumber = p_startClusterNumber;
-        m_size = p_size;
-        
+        setName(p_name);
+        setExtensionName(p_extension);
+        setIsDirectory(p_isDirectory);
+        setStartCluster(p_startClusterNumber);
+        setSize(p_size);
     }
 
-    public DirectoryEntry(byte[] p_raw) {
-        m_name = ByteArrayUtils.getCharArray(p_raw, NAME_OFFSET, 8);
-        m_extension = ByteArrayUtils.getCharArray(p_raw, EXTENSION_OFFSET, 3);
-        m_attributes = p_raw[ATTRIBUTES_OFFSET];
-        m_startClusterNumber = ByteArrayUtils.readShort(p_raw, START_CLUSTER_OFFSET);
-        m_size = ByteArrayUtils.readInt(p_raw, FILE_SIZE);
+    
+    public void setName(String p_name) {
+        for (int i=0; i<8; i++) {
+            if (i < p_name.length()) {
+                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) p_name.charAt(i));
+            } else {
+                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) 0x20);
+            }
+        }
+    }
+    public String getName() {
+        String name = "";
+        for (int i=0; i<8 && m_disk.readData(m_diskAddress+NAME_OFFSET+i) != 0x20; i++) {
+            name += (byte) m_disk.readData(m_diskAddress+NAME_OFFSET+i);
+        }
+        return name;
+    }
+    public void setExtensionName(String p_name) {
+        for (int i=0; i<3; i++) {
+            if (i < p_name.length()) {
+                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) p_name.charAt(i));
+            } else {
+                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) 0x20);
+            }
+        }
+    }
+    public String getExtensionName() {
+        String name = "";
+        for (int i=0; i<3 && m_disk.readData(m_diskAddress+NAME_OFFSET+i) != 0x20; i++) {
+            name += (byte) m_disk.readData(m_diskAddress+NAME_OFFSET+i);
+        }
+        return name;
     }
 
-    public byte[] getRaw() {
-        byte[] raw = new byte[32];
-        ByteArrayUtils.copyCharArray(raw, NAME_OFFSET, m_name);
-        ByteArrayUtils.copyCharArray(raw, EXTENSION_OFFSET, m_extension);
-        raw[ATTRIBUTES_OFFSET] = m_attributes;
-        ByteArrayUtils.writeShort(raw, START_CLUSTER_OFFSET, m_startClusterNumber);
-        ByteArrayUtils.writeInt(raw, FILE_SIZE, m_size);
-        return null;
+    public void setSize(int p_Size) {
+        m_disk.writeInt(m_diskAddress+SIZE_OFFSET, p_Size);
     }
+    public int getSize() {
+        return m_disk.readInt(m_diskAddress+START_CLUSTER_OFFSET);
+    }
+    public void setStartCluster(short p_startCluster) {
+        m_disk.writeShort(m_diskAddress+START_CLUSTER_OFFSET, p_startCluster);
+    }
+    public short getStartCluster() {
+        return m_disk.readShort(m_diskAddress+START_CLUSTER_OFFSET);
+    }
+
     public boolean isDirectory() {
-        return (m_attributes & 0x10) != 0;
+        return (m_disk.readData(m_diskAddress+ATTRIBUTES_OFFSET) & 0x10) != 0;
     }
     public void setIsDirectory(boolean p_isDirectory) {
-        m_attributes &= ~0x10;
-        m_attributes |= (p_isDirectory ? (byte)0x10 : (byte)0x00);
+        byte mask = (~0x10);
+        byte attributes = m_disk.readData(m_diskAddress+ATTRIBUTES_OFFSET);
+        //clear then set bit
+        attributes &= mask;
+        attributes |= (p_isDirectory ? (byte)0x10 : (byte)0x00);
+        m_disk.writeData(m_diskAddress+ATTRIBUTES_OFFSET, attributes);
     }
 
 }
