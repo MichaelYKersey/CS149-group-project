@@ -1,6 +1,7 @@
 package src;
 public class FileSystem {
     private Disk m_disk = new Disk();
+    private FAT m_fat = new FAT(m_disk, 0);
 
     //for simplicity we are gonna have a single FAT table and ignore the value of unused attributes
     //We also won't do long file names (8char file names)
@@ -15,5 +16,8 @@ public class FileSystem {
     }
     public void createDirectory(String p_path) {
         
+    }
+    public FAT getFAT() {
+        return m_fat;
     }
 }

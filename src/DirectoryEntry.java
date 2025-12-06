@@ -11,20 +11,22 @@ public class DirectoryEntry {
     static final int START_CLUSTER_OFFSET = 0x1A;
     static final int SIZE_OFFSET = 0x1C;
 
-    public DirectoryEntry() {
+    public DirectoryEntry(int p_diskAddress) {
+        m_diskAddress = p_diskAddress;
         //wipe the block
         for (int i=0; i<32; i++) {
             m_disk.writeData(m_diskAddress+i,(byte)0x00);
         }
     }
     public DirectoryEntry (
+        int p_diskAddress,
         String p_name, 
         String p_extension, 
         boolean p_isDirectory, 
         short p_startClusterNumber,
         int p_size
     ) {
-        this();
+        this(p_diskAddress);
         setName(p_name);
         setExtensionName(p_extension);
         setIsDirectory(p_isDirectory);

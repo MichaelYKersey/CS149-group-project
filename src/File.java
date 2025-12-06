@@ -25,7 +25,26 @@ public class File implements ReadWriteable{
      * changes the size of a file
      */
     public void changeSize(int p_newSize) {
+        int curClusterCount = (m_directoryEntryLocation.getSize()+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
+        int newClusterCount = (m_directoryEntryLocation.getSize()+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
+        m_directoryEntryLocation.setSize(p_newSize);
+        if (newClusterCount == curClusterCount) return;
+        if (newClusterCount < curClusterCount) throw new IllegalArgumentException();//shouldn't get called in this project
+        
+        //in case file size is 0 (no linked cluster)
+        FAT fat = m_fileSystem.getFAT();
+        if (m_directoryEntryLocation.getStartCluster() == -1) {
+            m_directoryEntryLocation.setStartCluster(fat.getFreeEntry());
+            curClusterCount++;
+        }
+        if (curClusterCount == newClusterCount) return;
 
+        short fatEntry = m_directoryEntryLocation.getStartCluster();
+        while (fat.getNextCluster(fatEntry) != -1) {
+            fatEntry = fat.getNextCluster(fatEntry);
+        }
+        short newClusterChainStart = fat.getFreeEntries((short)(newClusterCount-curClusterCount))[0];
+        fat.linkEntry(fatEntry, newClusterChainStart);
     }
     @Override
     public void writeData(int p_startAddress, byte p_data) {

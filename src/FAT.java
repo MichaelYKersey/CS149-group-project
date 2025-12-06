@@ -7,6 +7,12 @@ public class FAT {
     public FAT(Disk p_disk, int p_tableStart) {
         m_disk = p_disk;
         m_tableStart = p_tableStart;
+        //reserve the clusters used by the FAT Table
+        int tableSize = FileSystem.CLUSTERS_PER_TABLE*2;
+        int clustersReserved = (tableSize+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTERS_PER_TABLE;
+        for (short i = 0; i < clustersReserved; i++) {
+            writeEntry(i, (short) 0x01);
+        }
     }
     /**
      * reserves an open entry in table
@@ -47,5 +53,6 @@ public class FAT {
     public void writeEntry(short p_entryNumber, short p_value) {
         m_disk.writeInt(m_tableStart+p_entryNumber*2,p_value);
     }
+    public void appendEntry() {}
     //removal of entries is not needed due to project requirements
 }
