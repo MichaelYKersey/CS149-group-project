@@ -17,7 +17,7 @@ public class DirectoryEntry {
             m_disk.writeData(m_diskAddress+i,(byte)0x00);
         }
     }
-    public DirectoryEntry(
+    public DirectoryEntry (
         String p_name, 
         String p_extension, 
         boolean p_isDirectory, 
@@ -25,9 +25,6 @@ public class DirectoryEntry {
         int p_size
     ) {
         this();
-        if (p_name.length() > 8 || p_extension.length < 3) {
-            throw new IllegalArgumentException();
-        }
         setName(p_name);
         setExtensionName(p_extension);
         setIsDirectory(p_isDirectory);
@@ -37,6 +34,7 @@ public class DirectoryEntry {
 
     
     public void setName(String p_name) {
+        if (p_name.length() > 8) throw new IllegalArgumentException();
         for (int i=0; i<8; i++) {
             if (i < p_name.length()) {
                 m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) p_name.charAt(i));
@@ -53,6 +51,7 @@ public class DirectoryEntry {
         return name;
     }
     public void setExtensionName(String p_name) {
+        if (p_name.length() > 3) throw new IllegalArgumentException();
         for (int i=0; i<3; i++) {
             if (i < p_name.length()) {
                 m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) p_name.charAt(i));
