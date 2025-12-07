@@ -30,7 +30,7 @@ public class FAT {
                 return i;
             }
         }
-        return -1;
+        throw new IllegalStateException();
     }
     /**
      * @param p_clusters number of clusters to reserve 
@@ -55,20 +55,40 @@ public class FAT {
     public short getEntryValue(short p_clusterNumber) {
         return m_disk.readShort(m_tableStart+p_clusterNumber*2);
     }
+    
+   
+    
     public void writeEntry(short p_entryNumber, short p_value) {
-        m_disk.writeInt(m_tableStart+p_entryNumber*2,p_value);
+        m_disk.writeShort(m_tableStart + p_entryNumber*2, p_value);
     }
+
+    
+    
     public void appendEntry(short p_clusterNumber) {
         linkEntry(p_clusterNumber,getFreeEntry());
     }
+    
+    
+    
     public ArrayList<Short> getEntryChain(short p_clusterChainStartNumber) {
         ArrayList<Short> list = new ArrayList<>();
-        while (p_clusterChainStartNumber != -1) {
+
+        while (p_clusterChainStartNumber != (short)0xFF &&
+               p_clusterChainStartNumber != -1) {
+
             list.add(p_clusterChainStartNumber);
-            p_clusterChainStartNumber = getNextCluster(p_clusterChainStartNumber);
+
+            short next = getNextCluster(p_clusterChainStartNumber);
+            if (next == p_clusterChainStartNumber) break;
+
+            p_clusterChainStartNumber = next;
         }
+
         return list;
     }
+
+
+    
     //removal of entries is not needed due to project requirements
     public short getRootClusterNumber() {return CLUSTERS_RESERVED;};
     public int mapAddressToDisk(short p_clusterNumber, int p_offset) {

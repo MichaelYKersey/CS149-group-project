@@ -48,37 +48,55 @@ public class DirectoryEntry {
             }
         }
     }
+    
+    
     public String getName() {
         String name = "";
-        for (int i=0; i<8 && m_disk.readData(m_diskAddress+NAME_OFFSET+i) != 0x20; i++) {
-            name += (byte) m_disk.readData(m_diskAddress+NAME_OFFSET+i);
-        }
-        return name;
-    }
-    public void setExtensionName(String p_name) {
-        if (p_name.length() > 3) throw new IllegalArgumentException();
-        for (int i=0; i<3; i++) {
-            if (i < p_name.length()) {
-                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) p_name.charAt(i));
-            } else {
-                m_disk.writeData(m_diskAddress+NAME_OFFSET+i, (byte) 0x20);
-            }
-        }
-    }
-    public String getExtensionName() {
-        String name = "";
-        for (int i=0; i<3 && m_disk.readData(m_diskAddress+NAME_OFFSET+i) != 0x20; i++) {
-            name += (byte) m_disk.readData(m_diskAddress+NAME_OFFSET+i);
+        for (int i = 0; i < 8 && m_disk.readData(m_diskAddress + NAME_OFFSET + i) != 0x20; i++) {
+            name += (char) m_disk.readData(m_diskAddress + NAME_OFFSET + i);
         }
         return name;
     }
 
+    
+    
+    
+    public void setExtensionName(String p_name) {
+        if (p_name.length() > 3) throw new IllegalArgumentException();
+        for (int i = 0; i < 3; i++) {
+            if (i < p_name.length()) {
+                m_disk.writeData(m_diskAddress + EXTENSION_OFFSET + i, (byte) p_name.charAt(i));
+            } else {
+                m_disk.writeData(m_diskAddress + EXTENSION_OFFSET + i, (byte) 0x20);
+            }
+        }
+    }
+
+    
+    
+    public String getExtensionName() {
+        String name = "";
+        for (int i = 0; i < 3 && m_disk.readData(m_diskAddress + EXTENSION_OFFSET + i) != 0x20; i++) {
+            name += (char) m_disk.readData(m_diskAddress + EXTENSION_OFFSET + i);
+        }
+        return name;
+    }
+
+    
+    
+    
+    
+    
+
     public void setSize(int p_Size) {
-        m_disk.writeInt(m_diskAddress+SIZE_OFFSET, p_Size);
+        m_disk.writeInt(m_diskAddress + SIZE_OFFSET, p_Size);
     }
+
     public int getSize() {
-        return m_disk.readInt(m_diskAddress+START_CLUSTER_OFFSET);
+        return m_disk.readInt(m_diskAddress + SIZE_OFFSET);
     }
+
+
     public void setStartCluster(short p_startCluster) {
         m_disk.writeShort(m_diskAddress+START_CLUSTER_OFFSET, p_startCluster);
     }

@@ -18,6 +18,7 @@ public class FileSystem {
         }
         if (folderPathLen < 0) throw new IllegalArgumentException();
         String folderPath = p_path.substring(0, folderPathLen);
+        if (folderPath.equals("")) folderPath = "/";
         Directory directory = getDirectory(folderPath);
         if (directory == null) throw new IllegalArgumentException();
         DirectoryEntry entry = directory.addFile(p_path.substring(folderPathLen+1), "");
@@ -34,6 +35,7 @@ public class FileSystem {
         }
         if (folderPathLen < 0) throw new IllegalArgumentException();
         String folderPath = p_path.substring(0, folderPathLen);
+        if (folderPath.equals("")) folderPath = "/";   
         Directory directory = getDirectory(folderPath);
         if (directory == null) throw new IllegalArgumentException();
         DirectoryEntry entry = directory.addDirectory(p_path.substring(folderPathLen+1), "");

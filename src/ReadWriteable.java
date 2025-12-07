@@ -17,9 +17,24 @@ public interface ReadWriteable {
             writeData(p_startAddress+i,p_data[i]);
         }
     }
-    default void writeInt(int p_startAddress, int p_val) {writeData(p_val, ByteArrayUtils.toByteArray(p_val));}
+  
+    
+    default void writeInt(int p_startAddress, int p_val) {
+        writeData(p_startAddress, ByteArrayUtils.toByteArray(p_val));
+    }
+
     default int readInt(int p_startAddress) {return ByteArrayUtils.readInt(readData(p_startAddress, 4));}
-    default void writeShort(int p_startAddress, short p_val) {writeData(p_val, ByteArrayUtils.toByteArray(p_val));}
+    
+   // default void writeShort(int p_startAddress, short p_val) {writeData(p_val, ByteArrayUtils.toByteArray(p_val));}
+    
+    default void writeShort(int p_startAddress, short p_val) {
+        // write high byte
+        writeData(p_startAddress, (byte) (p_val >> 8));
+        // write low byte
+        writeData(p_startAddress + 1, (byte) (p_val));
+    }
+
+    
     default short readShort(int p_startAddress) {return ByteArrayUtils.readShort(readData(p_startAddress, 2));}
     default void writeString(int p_startAddress, String p_val) {
         writeData(p_startAddress, p_val.getBytes());

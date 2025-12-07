@@ -14,14 +14,45 @@ public class File implements ReadWriteable{
     /**
      * linked file information to object
      */
+    
     public void openFile() {
         m_directoryEntry = m_fileSystem.getDirectoryEntry(m_path);
-        m_clusters = m_fileSystem.getFAT().getEntryChain(m_directoryEntry.getStartCluster());
+
+        if (m_directoryEntry == null) {
+            m_clusters = null;
+            return;
+        }
+
+        if (m_directoryEntry.getStartCluster() == -1) {
+            m_clusters = new ArrayList<>();
+            return;
+        }
+
+        m_clusters = m_fileSystem.getFAT().getEntryChain(
+            m_directoryEntry.getStartCluster()
+        );
     }
+
     public void openFile(DirectoryEntry p_directoryEntry) {
         m_directoryEntry = p_directoryEntry;
-        m_clusters = m_fileSystem.getFAT().getEntryChain(m_directoryEntry.getStartCluster());
+
+        if (m_directoryEntry == null) {
+            m_clusters = null;
+            return;
+        }
+
+        if (m_directoryEntry.getStartCluster() == -1) {
+            m_clusters = new ArrayList<>();
+            return;
+        }
+
+        m_clusters = m_fileSystem.getFAT().getEntryChain(
+            m_directoryEntry.getStartCluster()
+        );
     }
+
+
+    
     /**
      * unlinks file information from object
      */
@@ -33,13 +64,17 @@ public class File implements ReadWriteable{
      * changes the size of a file
      */
     public void changeSize(int p_newSize) {
-        int curClusterCount = (m_directoryEntry.getSize()+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
-        int newClusterCount = (m_directoryEntry.getSize()+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
+        int curClusterCount =
+            (m_directoryEntry.getSize()+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
+
+        int newClusterCount =
+            (p_newSize+FileSystem.CLUSTER_SIZE-1)/FileSystem.CLUSTER_SIZE;
+
         m_directoryEntry.setSize(p_newSize);
+
         if (newClusterCount == curClusterCount) return;
-        if (newClusterCount < curClusterCount) throw new IllegalArgumentException();//shouldn't get called in this project
-        
-        //in case file size is 0 (no linked cluster)
+        if (newClusterCount < curClusterCount) throw new IllegalArgumentException();
+
         FAT fat = m_fileSystem.getFAT();
         if (m_directoryEntry.getStartCluster() == -1) {
             m_directoryEntry.setStartCluster(fat.getFreeEntry());
@@ -51,15 +86,24 @@ public class File implements ReadWriteable{
         while (fat.getNextCluster(fatEntry) != -1) {
             fatEntry = fat.getNextCluster(fatEntry);
         }
-        short newClusterChainStart = fat.getFreeEntries((short)(newClusterCount-curClusterCount))[0];
+
+        short newClusterChainStart =
+            fat.getFreeEntries((short)(newClusterCount-curClusterCount))[0];
+
         fat.linkEntry(fatEntry, newClusterChainStart);
         m_clusters = fat.getEntryChain(m_directoryEntry.getStartCluster());
     }
+
+    
     @Override
     public void writeData(int p_address, byte p_data) {
         if (!inRange(p_address)) throw new IllegalArgumentException();
         m_fileSystem.getDisk().writeData(mapAddressToDisk(p_address), p_data);
     }
+
+    
+    
+    
     @Override
     public byte readData(int p_address) {
         if (!inRange(p_address)) throw new IllegalArgumentException();
@@ -69,10 +113,20 @@ public class File implements ReadWriteable{
     public boolean inRange(int p_address) {
         return p_address >= 0 && p_address < m_directoryEntry.getSize();
     }
+ 
     public int mapAddressToDisk(int p_fileAddress) {
-        short clusterNum = m_clusters.get(p_fileAddress/FileSystem.CLUSTER_SIZE);
-        return m_fileSystem.getFAT().mapAddressToDisk(clusterNum,p_fileAddress% FileSystem.CLUSTER_SIZE);
+        if (m_clusters == null || m_clusters.size() == 0) {
+            m_clusters = m_fileSystem.getFAT().getEntryChain(
+                m_directoryEntry.getStartCluster()
+            );
+        }
+
+        short clusterNum = m_clusters.get(p_fileAddress / FileSystem.CLUSTER_SIZE);
+        return m_fileSystem.getFAT().mapAddressToDisk(
+            clusterNum, p_fileAddress % FileSystem.CLUSTER_SIZE
+        );
     }
+
     public DirectoryEntry getDirectoryEntry() {
         return m_directoryEntry;
     }
