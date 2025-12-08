@@ -97,6 +97,25 @@ public class Demo {
 
         imageFile.closeFile();
 
+        // FolderDemo
+        System.out.println("\n\n=== FOLDER SYSTEM DEMO ===");
+
+        fs.createDirectory("/FOLDER");
+        System.out.println("Folder: \"/FOLDER\" created");
+        byte[] file3Data = "I'm in a folder!".getBytes();
+        fs.createFile("/FOLDER/FILE3",file3Data);
+        System.out.println("File: \"/FOLDER/FILE3\" created");
+
+        File file3 = fs.getAndOpenFile("/FOLDER/FILE3");
+        if (file3 == null) {
+            System.out.println("Failed to open /FOLDER/FILE3");
+            return;
+        }
+        for (int i = 0; i < file3.getDirectoryEntry().getSize(); i++) {
+            System.out.print((char) file3.readData(i));
+        }
+        file3.closeFile();
+
         System.out.println("\n\n=== FILE SYSTEM DEMO COMPLETE ===");
     }
 }
